@@ -66,7 +66,7 @@ export function HeroSection() {
 
         {/* 4. Video background (nên để trên cùng các lớp phủ) */}
         <video
-          className="absolute inset-0 w-full h-full object-cover opacity-30 z-100"
+          className="absolute right-[100%] inset-0 w-screen opacity-30 z-100"
           src="/videos/background-video.mp4"
           autoPlay
           loop

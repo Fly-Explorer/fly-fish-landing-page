@@ -6,6 +6,8 @@ import { ModeToggle } from "@/components/mode-toggle"
 import { Github, Menu, X } from "lucide-react";
 import Link from "next/link"
 import { cn } from "@/lib/utils"
+import { GradientLogoText } from "./ui/GradientText"
+import { Logo } from "./ui/logo";
 
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false)
@@ -28,20 +30,9 @@ export function Header() {
       )}
     >
       <div className="container mx-auto px-4 flex items-center justify-between">
-        <Link href="/" className="flex items-center">
-         <img src="/flyfish-logo.svg" width="40" height="40" />
-         <span
-           className="
-             font-aeonik font-black text-3xl md:text-4xl tracking-tight
-             bg-gradient-to-r from-white via-[#70B9EE] to-[#008FF5]
-             bg-clip-text text-transparent
-             drop-shadow-[0_2px_16px_rgba(0,143,245,0.25)]
-             [text-shadow:_0_2px_24px_rgba(0,143,245,0.25)]
-             select-none
-           "
-         >
-           Fly Fish
-         </span>
+        <Link href="/" className="flex items-center group gap-5">
+         <Logo width={40} height={40} />
+         <GradientLogoText>Fly Fish</GradientLogoText>
         </Link>
 
 
