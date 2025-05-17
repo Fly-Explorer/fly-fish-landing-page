@@ -15,11 +15,13 @@ export const AnimationContainer: React.FC<AnimationContainerProps> = ({
 }) => {
   // scrool to first child
   useEffect(() => {
-    const firstChild = document.querySelector('.hero-section');
-    if (firstChild) {
-      firstChild.scrollIntoView({ behavior: 'smooth' });
-    }
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 1000);
+    });
   }, []);
+
   return (
     <motion.div
       className={cn('w-full h-full', className)}

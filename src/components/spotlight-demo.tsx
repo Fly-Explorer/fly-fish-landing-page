@@ -1,53 +1,65 @@
-"use client"
+"use client";
 
-import { useState, useEffect, useRef } from "react"
-import { Command, Search, ArrowRight, X, Zap, Settings, FileText, Code } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+import { SpotlightModal } from "@/feature/spotlight/SpotlightModal";
+import { useState, useEffect, useRef } from "react";
+import {
+  Command,
+  Search,
+  Zap,
+  Settings,
+  FileText,
+  Code,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 export function SpotlightDemo() {
-  const [isOpen, setIsOpen] = useState(false)
-  const [searchQuery, setSearchQuery] = useState("")
-  const inputRef = useRef<HTMLInputElement>(null)
-  const spotlightRef = useRef<HTMLDivElement>(null)
+  const [isOpen, setIsOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+  const spotlightRef = useRef<HTMLDivElement>(null);
 
   const toggleSpotlight = () => {
-    setIsOpen(!isOpen)
+    setIsOpen(!isOpen);
     if (!isOpen) {
       setTimeout(() => {
-        inputRef.current?.focus()
-      }, 100)
+        inputRef.current?.focus();
+      }, 100);
     }
-  }
+  };
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Check for Cmd+/ or Ctrl+/
       if ((e.metaKey || e.ctrlKey) && e.key === "/") {
-        e.preventDefault()
-        toggleSpotlight()
+        e.preventDefault();
+        toggleSpotlight();
       }
 
       // Close on escape
       if (e.key === "Escape" && isOpen) {
-        setIsOpen(false)
+        setIsOpen(false);
       }
-    }
+    };
 
-    window.addEventListener("keydown", handleKeyDown)
-    return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [isOpen])
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen]);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (spotlightRef.current && !spotlightRef.current.contains(e.target as Node) && isOpen) {
-        setIsOpen(false)
+      if (
+        spotlightRef.current &&
+        !spotlightRef.current.contains(e.target as Node) &&
+        isOpen
+      ) {
+        setIsOpen(false);
       }
-    }
+    };
 
-    document.addEventListener("mousedown", handleClickOutside)
-    return () => document.removeEventListener("mousedown", handleClickOutside)
-  }, [isOpen])
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isOpen]);
 
   const results = [
     {
@@ -74,15 +86,15 @@ export function SpotlightDemo() {
       description: "View SDK documentation",
       icon: <FileText className="h-5 w-5 text-secondary" />,
     },
-  ]
+  ];
 
   const filteredResults = searchQuery
     ? results.filter(
         (item) =>
           item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          item.description.toLowerCase().includes(searchQuery.toLowerCase()),
+          item.description.toLowerCase().includes(searchQuery.toLowerCase())
       )
-    : results
+    : results;
 
   return (
     <section id="demo" className="py-20 relative">
@@ -92,7 +104,8 @@ export function SpotlightDemo() {
             Spotlight-like Interface
           </h2>
           <p className="text-lg text-foreground/70 max-w-2xl mx-auto font-poppins">
-            Access all Sui Network features with a simple keystroke, just like Spotlight on macOS.
+            Access all Sui Network features with a simple keystroke, just like
+            Spotlight on macOS.
           </p>
         </div>
 
@@ -102,7 +115,7 @@ export function SpotlightDemo() {
               "glass-effect rounded-xl shadow-xl overflow-hidden",
               "border border-primary/20 dark:border-primary/10",
               "transition-all duration-300 transform",
-              "flex flex-col",
+              "flex flex-col"
             )}
           >
             <div className="p-4 border-b border-border/50 flex items-center justify-between">
@@ -111,7 +124,9 @@ export function SpotlightDemo() {
                 <div className="h-3 w-3 rounded-full bg-secondary/70" />
                 <div className="h-3 w-3 rounded-full bg-primary/70" />
               </div>
-              <div className="text-sm text-foreground/60 font-medium">Fly Fish SDK</div>
+              <div className="text-sm text-foreground/60 font-medium">
+                Fly Fish SDK
+              </div>
               <div className="w-16"></div>
             </div>
 
@@ -123,18 +138,34 @@ export function SpotlightDemo() {
                 <div className="flex items-center">
                   <Command className="h-5 w-5 mr-2 text-primary" />
                   <span>
-                    Press <kbd className="px-2 py-1 bg-muted rounded mx-1 text-xs">Cmd</kbd> +{" "}
-                    <kbd className="px-2 py-1 bg-muted rounded mx-1 text-xs">/</kbd> to search
+                    Press{" "}
+                    <kbd className="px-2 py-1 bg-muted rounded mx-1 text-xs">
+                      Cmd
+                    </kbd>{" "}
+                    +{" "}
+                    <kbd className="px-2 py-1 bg-muted rounded mx-1 text-xs">
+                      /
+                    </kbd>{" "}
+                    to search
                   </span>
                 </div>
                 <Search className="h-5 w-5 text-foreground/50" />
               </Button>
             </div>
           </div>
-
           {/* Spotlight Modal */}
+          <SpotlightModal
+            isOpen={isOpen}
+            spotlightRef={spotlightRef}
+            inputRef={inputRef}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            filteredResults={filteredResults}
+          />
+
+          {/* Spotlight Modal
           {isOpen && (
-            <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div className="fixed inset-0 bg-background/80 z-900 flex items-center justify-center p-4">
               <div
                 ref={spotlightRef}
                 className="w-full max-w-2xl bg-background border border-border rounded-lg shadow-2xl overflow-hidden"
@@ -190,9 +221,9 @@ export function SpotlightDemo() {
                 </div>
               </div>
             </div>
-          )}
+          )} */}
         </div>
       </div>
     </section>
-  )
+  );
 }
