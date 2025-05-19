@@ -27,7 +27,7 @@ export function Header() {
       className={cn(
         "header-section fixed top-0 left-0 right-0 z-50 transition-all duration-300",
         isScrolled
-          ? "bg-background/80 backdrop-blur-md py-2 shadow-md"
+          ? "bg-background/10 backdrop-blur-md py-2 shadow-md"
           : "bg-transparent py-4"
       )}
     >

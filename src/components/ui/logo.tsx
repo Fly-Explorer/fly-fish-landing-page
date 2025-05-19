@@ -9,7 +9,7 @@ interface LogoProps {
 export const Logo: React.FC<LogoProps> = ({
   width = 40,
   height = 40,
-  className = "",
+  className,
 }) => (
   <img
     src="/flyfish-logo.svg"
