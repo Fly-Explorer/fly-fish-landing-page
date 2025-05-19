@@ -1,32 +1,22 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Command, Search, X, ArrowRight } from "lucide-react";
+import { Command, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useCommands } from "@/hooks";
 import { ICommandResult, IDataFormated } from "@/types/api-responses";
-
-// Extended interface to include icon and description fields that might be in the data
-interface CommandData {
-  icon?: string;
-  description?: string;
-  [key: string]: unknown;
-}
-
-interface SpotlightResult {
-  id: string | number;
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-  path?: string;
-}
+import { SpotlightSearchBar } from "./spotlight/search-bar";
+import { SpotlightResultsArea } from "./spotlight/results-area";
+import { CommandData, SelectedFeature, SpotlightResult } from "@/types/spotlight";
 
 export function SpotlightSearch() {
   // State for the modal
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(-1);
+  const [selectedFeature, setSelectedFeature] = useState<SelectedFeature | undefined>(undefined);
+  const [contentType, setContentType] = useState<string>("commands");
   const inputRef = useRef<HTMLInputElement>(null);
   const spotlightRef = useRef<HTMLDivElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
@@ -137,6 +127,22 @@ export function SpotlightSearch() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, filteredResults, selectedIndex]);
 
+  // Click outside to close
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        spotlightRef.current &&
+        !spotlightRef.current.contains(e.target as Node) &&
+        isOpen
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isOpen]);
+
   // Scroll selected item into view
   const scrollSelectedIntoView = (index: number) => {
     // If nothing is selected, don't scroll
@@ -153,8 +159,6 @@ export function SpotlightSearch() {
       const container = resultsRef.current;
       const containerRect = container.getBoundingClientRect();
       const selectedRect = selectedElement.getBoundingClientRect();
-
-      console.log(index);
 
       if (index === 0) {
         container.scrollTop = 0;
@@ -178,22 +182,6 @@ export function SpotlightSearch() {
       }
     }, 10); // Small delay to ensure DOM updates
   };
-
-  // Click outside to close
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (
-        spotlightRef.current &&
-        !spotlightRef.current.contains(e.target as Node) &&
-        isOpen
-      ) {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [isOpen]);
 
   // Process commands data when it loads
   useEffect(() => {
@@ -242,9 +230,69 @@ export function SpotlightSearch() {
   const handleResultSelect = (result: SpotlightResult) => {
     if (result.path) {
       console.log("Selected path:", result.path);
-      // Here you could navigate or take action based on the path
+      // Map API paths to feature types
+      if (result.path.startsWith('/balance/')) {
+        setSelectedFeature({
+          icon: result.icon,
+          name: result.title,
+          path: result.path,
+          contentType: "check-balances"
+        });
+        setContentType("check-balances");
+        setSearchQuery('');
+      } else if (result.path.startsWith('/package/')) {
+        setSelectedFeature({
+          icon: result.icon,
+          name: result.title,
+          path: result.path,
+          contentType: "package-info"
+        });
+        setContentType("package-info");
+        setSearchQuery('');
+      } else if (result.path.startsWith('/many/')) {
+        setSelectedFeature({
+          icon: result.icon,
+          name: result.title,
+          path: result.path,
+          contentType: "packages"
+        });
+        setContentType("packages");
+        setSearchQuery('');
+      } else if (result.path.startsWith('/nft/')) {
+        setSelectedFeature({
+          icon: result.icon,
+          name: result.title,
+          path: result.path,
+          contentType: "nfts"
+        });
+        setContentType("nfts");
+        setSearchQuery('');
+      } else if (result.path.startsWith('/feature/')) {
+        // Legacy support for existing feature paths
+        const featureType = result.path.split('/')[2];
+        setSelectedFeature({
+          icon: result.icon,
+          name: result.title,
+          path: result.path,
+          contentType: featureType
+        });
+        setContentType(featureType);
+        setSearchQuery('');
+      } else {
+        // Otherwise close the modal
+        setIsOpen(false);
+      }
+    } else {
+      setIsOpen(false);
     }
-    setIsOpen(false);
+  };
+
+  // Reset the search to phase 1
+  const resetToPhase1 = () => {
+    setSelectedFeature(undefined);
+    setContentType('commands');
+    setSearchQuery('');
+    setSelectedIndex(-1);
   };
 
   return (
@@ -313,110 +361,27 @@ export function SpotlightSearch() {
                 className="w-full max-w-2xl bg-background border border-border rounded-lg shadow-2xl overflow-hidden"
                 onClick={(e) => e.stopPropagation()}
               >
-                <div className="p-4 flex items-center border-b border-border">
-                  <Search className="h-5 w-5 text-foreground/50 mr-2" />
-                  <input
-                    ref={inputRef}
-                    type="text"
-                    placeholder="Search Fly Fish SDK..."
-                    className="flex-1 bg-transparent border-none outline-none text-foreground placeholder:text-foreground/50"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
-                  {searchQuery && (
-                    <button
-                      onClick={() => setSearchQuery("")}
-                      className="text-foreground/50 hover:text-foreground"
-                    >
-                      <X className="h-5 w-5" />
-                    </button>
-                  )}
-                </div>
+                {/* Search Bar Component */}
+                <SpotlightSearchBar 
+                  searchQuery={searchQuery}
+                  setSearchQuery={setSearchQuery}
+                  inputRef={inputRef as React.RefObject<HTMLInputElement>}
+                  selectedFeature={selectedFeature}
+                  onBack={resetToPhase1}
+                />
 
-                <div className="max-h-80 overflow-y-auto" ref={resultsRef}>
-                  {commandsLoading && (
-                    <div className="p-6 text-center text-foreground/50">
-                      Loading commands...
-                    </div>
-                  )}
-
-                  {commandsError && (
-                    <div className="p-6 text-center text-red-500">
-                      Error loading commands
-                    </div>
-                  )}
-
-                  {!commandsLoading &&
-                  !commandsError &&
-                  filteredResults.length > 0 ? (
-                    <div className="p-2">
-                      {filteredResults.map((result, index) => (
-                        <div
-                          id={`spotlight-result-${index}`}
-                          key={result.id}
-                          className={cn(
-                            "flex items-center p-3 rounded-md cursor-pointer group",
-                            selectedIndex === index
-                              ? "bg-primary/10 text-primary"
-                              : "hover:bg-muted"
-                          )}
-                          onClick={() => handleResultSelect(result)}
-                        >
-                          <div className="mr-3">{result.icon}</div>
-                          <div className="flex-1">
-                            <div className="font-medium">{result.title}</div>
-                            <div
-                              className={cn(
-                                "text-sm",
-                                selectedIndex === index
-                                  ? "text-primary/70"
-                                  : "text-foreground/60"
-                              )}
-                            >
-                              {result.description}
-                            </div>
-                          </div>
-                          <ArrowRight
-                            className={cn(
-                              "h-4 w-4 transition-colors",
-                              selectedIndex === index
-                                ? "text-primary"
-                                : "text-foreground/30 group-hover:text-primary"
-                            )}
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    !commandsLoading && (
-                      <div className="p-6 text-center text-foreground/50">
-                        {searchQuery
-                          ? `No results found for "${searchQuery}"`
-                          : "No commands available"}
-                      </div>
-                    )
-                  )}
-                </div>
-
-                <div className="p-3 border-t border-border bg-muted/30 text-xs text-foreground/50 flex justify-between">
-                  <div>
-                    Press{" "}
-                    <kbd className="px-1.5 py-0.5 bg-background rounded mx-1">
-                      ↑
-                    </kbd>
-                    <kbd className="px-1.5 py-0.5 bg-background rounded mx-1">
-                      ↓
-                    </kbd>{" "}
-                    to navigate
-                  </div>
-                  <div>
-                    Press{" "}
-                    <kbd className="px-1.5 py-0.5 bg-background rounded mx-1">
-                      Enter
-                    </kbd>{" "}
-                    to select
-                  </div>
-                </div>
+                {/* Results Area Component */}
+                <SpotlightResultsArea
+                  resultsRef={resultsRef as React.RefObject<HTMLDivElement>}
+                  isLoading={commandsLoading}
+                  error={commandsError ? new Error("Failed to load commands") : null}
+                  results={filteredResults}
+                  selectedIndex={selectedIndex}
+                  searchQuery={searchQuery}
+                  onResultSelect={handleResultSelect}
+                  contentType={contentType}
+                  selectedFeature={selectedFeature}
+                />
               </div>
             </div>
           )}
