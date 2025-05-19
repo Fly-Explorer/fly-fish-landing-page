@@ -1,4 +1,4 @@
-import React, { RefObject, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Search, X, ArrowRight } from "lucide-react";
 import { useCommands } from "@/hooks";
 import { ICommandResult, IDataFormated } from "@/types/api-responses";
@@ -22,9 +22,6 @@ interface SpotlightModalProps {
   isOpen: boolean;
   spotlightRef: React.RefObject<HTMLDivElement | null>;
   inputRef: React.RefObject<HTMLInputElement | null>;
-  searchQuery: string;
-  setSearchQuery: (v: string) => void;
-  filteredResults: SpotlightResult[];
   onResultSelect?: (path: string) => void;
 }
 
@@ -32,13 +29,11 @@ export const SpotlightModal: React.FC<SpotlightModalProps> = ({
   isOpen,
   spotlightRef,
   inputRef,
-  searchQuery,
-  setSearchQuery,
-  filteredResults: propResults,
   onResultSelect,
 }) => {
   const { data: commandsData, error: commandsError, isLoading: commandsLoading } = useCommands();
   const [processedResults, setProcessedResults] = useState<SpotlightResult[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Process commands data when it loads
   useEffect(() => {
