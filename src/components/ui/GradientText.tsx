@@ -14,7 +14,7 @@ export const GradientLogoText: React.FC<GradientLogoTextProps> = ({ children, cl
       drop-shadow-[0_2px_16px_rgba(0,143,245,0.25)]
       [text-shadow:_0_2px_24px_rgba(0,143,245,0.25)]
       select-none
-      transition duration-200
+      transition-all duration-200
       group-hover:brightness-125
       group-hover:drop-shadow-[0_0_32px_rgba(0,143,245,0.55)]
       ${className}

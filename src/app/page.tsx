@@ -2,7 +2,7 @@ import { AnimationContainer } from "@/components/animations/animation-container"
 import { FeaturesSection } from "@/components/features-section";
 import { Header } from "@/components/header";
 import { HeroSection } from "@/components/hero-section";
-import { SpotlightDemo } from "@/components/spotlight-demo";
+import { SpotlightSearch } from "@/components/spotlight-search";
 import { UsageSection } from "@/components/usage-section";
 import { Footer } from "@/components/footer";
 import AppDock from "@/feature/appdock/app-dock";
@@ -14,7 +14,7 @@ export default function Home() {
       <AppDock />
       <Header />
       <HeroSection />
-      <SpotlightDemo />
+      <SpotlightSearch />
       <FeaturesSection />
       <UsageSection />
       <Footer />
