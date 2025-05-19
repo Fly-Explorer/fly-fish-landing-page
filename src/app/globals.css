@@ -205,3 +205,17 @@
   font-display: swap;
 }
 /* Thêm các font-weight, italic khác nếu cần */
+
+.gradient-text {
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
+  transition: all 0.5s ease;
+
+  &:hover {
+    /* text-shadow: 0 0 10px rgba(0, 143, 245, 0.5),
+                 0 0 20px rgba(112, 185, 238, 0.3); */
+    filter: brightness(1.2);
+  }
+}

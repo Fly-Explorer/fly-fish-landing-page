@@ -66,7 +66,7 @@ export function SpotlightDemo() {
       id: 1,
       title: "Sui Wallet Integration",
       description: "Connect to Sui wallets",
-      icon: <Zap className="h-5 w-5 text-primary" />,
+      icon: <img src="/icons/sui.jpg" className="h-5 w-5 text-primary" />,
     },
     {
       id: 2,
@@ -82,6 +82,31 @@ export function SpotlightDemo() {
     },
     {
       id: 4,
+      title: "Documentation",
+      description: "View SDK documentation",
+      icon: <FileText className="h-5 w-5 text-secondary" />,
+    },
+
+    {
+      id: 5,
+      title: "Documentation",
+      description: "View SDK documentation",
+      icon: <FileText className="h-5 w-5 text-secondary" />,
+    },
+    {
+      id: 6,
+      title: "Documentation",
+      description: "View SDK documentation",
+      icon: <FileText className="h-5 w-5 text-secondary" />,
+    },
+    {
+      id: 7,
+      title: "Documentation",
+      description: "View SDK documentation",
+      icon: <FileText className="h-5 w-5 text-secondary" />,
+    },
+    {
+      id: 8,
       title: "Documentation",
       description: "View SDK documentation",
       icon: <FileText className="h-5 w-5 text-secondary" />,

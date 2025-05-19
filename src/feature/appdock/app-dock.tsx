@@ -20,7 +20,7 @@ const apps = [
   {
     id: '7k',
     name: '7K Trading',
-    icon: '/icons/7k.png',
+    icon: '/icons/7k.jpg',
     modalContent: <div>7K Trading content</div>,
   }  
 ];
@@ -30,7 +30,7 @@ export default function AppDock() {
 
   return (
     <>
-      <div className="fixed top-1/2 right-4 -translate-y-1/2 bg-blue-400/20 backdrop-blur-md p-3 rounded-3xl flex flex-col gap-4 shadow-lg">
+      <div className="fixed top-1/2 right-4 -translate-y-1/2 bg-blue-400/20 backdrop-blur-md p-3 rounded-3xl flex flex-col gap-4 shadow-lg z-999">
         {apps.map((app) => (
           <AppIcon
             key={app.id}
