@@ -8,7 +8,7 @@ interface GradientLogoTextProps {
 export const GradientLogoText: React.FC<GradientLogoTextProps> = ({ children, className = "" }) => (
   <span
     className={`
-      font-aeonik font-black text-3xl md:text-4xl tracking-tight
+      font-aeonik font-black text-2xl md:text-4xl tracking-tight
       bg-gradient-to-r from-white via-[#70B9EE] to-[#008FF5]
       bg-clip-text text-transparent
       drop-shadow-[0_2px_16px_rgba(0,143,245,0.25)]
