@@ -92,7 +92,7 @@ export function FeaturesSection() {
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5" />
       </div>
 
-      <div ref={sectionRef} className="container mx-auto px-4 opacity-0 transition-opacity duration-1000">
+      <div ref={sectionRef} className="container mx-auto px-16 opacity-0 transition-opacity duration-1000">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold mb-4 inline-block ninja-slash-reverse px-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
             Powerful Features
