@@ -2,20 +2,22 @@ import { AnimationContainer } from "@/components/animations/animation-container"
 import { FeaturesSection } from "@/components/features-section";
 import { Header } from "@/components/header";
 import { HeroSection } from "@/components/hero-section";
-import { SpotlightDemo } from "@/components/spotlight-demo";
+import { SpotlightSearch } from "@/components/spotlight-search";
 import { UsageSection } from "@/components/usage-section";
 import { Footer } from "@/components/footer";
+import AppDock from "@/feature/appdock/app-dock";
 
 export default function Home() {
   return (
-    <AnimationContainer className="min-h-screen">
-      {/* <div className="flex flex-col items-center justify-items-center min-h-screen gap-16 font-[family-name:var(--font-geist-sans)]"> */}
-        <Header />
-        <HeroSection />
-        <SpotlightDemo />
-        <FeaturesSection />
-        <UsageSection />
-        <Footer />
+    <AnimationContainer className="min-h-screen transform-gpu">
+      <div id="first-fly-fish-section"></div>
+      <AppDock />
+      <Header />
+      <HeroSection />
+      <SpotlightSearch />
+      <FeaturesSection />
+      <UsageSection />
+      <Footer />
       {/* </div> */}
     </AnimationContainer>
   );

@@ -1,66 +1,74 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { ModeToggle } from "@/components/mode-toggle"
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { ModeToggle } from "@/components/mode-toggle";
 import { Github, Menu, X } from "lucide-react";
-import Link from "next/link"
-import { cn } from "@/lib/utils"
+import Link from "next/link";
+import { cn } from "@/lib/utils";
+import { GradientLogoText } from "./ui/GradientText";
+import { Logo } from "./ui/logo";
 
 export function Header() {
-  const [isScrolled, setIsScrolled] = useState(false)
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10)
-    }
+      setIsScrolled(window.scrollY > 10);
+    };
 
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
     <header
       className={cn(
         "header-section fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-        isScrolled ? "bg-background/80 backdrop-blur-md py-2 shadow-md" : "bg-transparent py-4",
+        isScrolled
+          ? "bg-background/10 backdrop-blur-md py-2 shadow-md"
+          : "bg-transparent py-4"
       )}
     >
-      <div className="container mx-auto px-4 flex items-center justify-between">
-        <Link href="/" className="flex items-center">
-         <img src="/flyfish-logo.svg" width="40" height="40" />
-         <span
-           className="
-             font-aeonik font-black text-3xl md:text-4xl tracking-tight
-             bg-gradient-to-r from-white via-[#70B9EE] to-[#008FF5]
-             bg-clip-text text-transparent
-             drop-shadow-[0_2px_16px_rgba(0,143,245,0.25)]
-             [text-shadow:_0_2px_24px_rgba(0,143,245,0.25)]
-             select-none
-           "
-         >
-           Fly Fish
-         </span>
+      <div className="container mx-auto px-16 flex items-center justify-between">
+        <Link href="/" className="flex items-center group gap-2">
+          <Logo width={30} height={30} />
+          <GradientLogoText className="!text-2xl font-bold">
+            Fly Fish
+          </GradientLogoText>
         </Link>
-
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-8">
-          <Link href="#features" className="text-foreground/80 hover:text-primary transition-colors font-poppins">
+          <Link
+            href="#features"
+            className="text-foreground/80 hover:text-primary transition-colors font-poppins"
+          >
             Features
           </Link>
-          <Link href="#demo" className="text-foreground/80 hover:text-primary transition-colors font-poppins">
+          <Link
+            href="#demo"
+            className="text-foreground/80 hover:text-primary transition-colors font-poppins"
+          >
             Demo
           </Link>
-          <Link href="#usage" className="text-foreground/80 hover:text-primary transition-colors font-poppins">
+          <Link
+            href="#usage"
+            className="text-foreground/80 hover:text-primary transition-colors font-poppins"
+          >
             Usage
           </Link>
           <div className="flex items-center space-x-4">
             <Button variant="outline" size="sm" asChild>
-              <Link href="https://github.com/flyfish-sdk" target="_blank" rel="noopener noreferrer">
-                <Github className="mr-2 h-4 w-4" />
-                GitHub
+              <Link
+                href="https://github.com/flyfish-sdk"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center"
+              >
+                <Github className="h-4 w-4" />
+                <p className="text-sm text-center">GitHub</p>
               </Link>
             </Button>
             <ModeToggle />
@@ -70,8 +78,16 @@ export function Header() {
         {/* Mobile Menu Button */}
         <div className="flex items-center space-x-4 md:hidden">
           <ModeToggle />
-          <Button variant="ghost" size="icon" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
-            {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          >
+            {isMobileMenuOpen ? (
+              <X className="h-6 w-6" />
+            ) : (
+              <Menu className="h-6 w-6" />
+            )}
           </Button>
         </div>
       </div>
@@ -101,8 +117,17 @@ export function Header() {
             >
               Usage
             </Link>
-            <Button variant="outline" size="sm" className="w-full justify-start" asChild>
-              <Link href="https://github.com/flyfish-sdk" target="_blank" rel="noopener noreferrer">
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full justify-start"
+              asChild
+            >
+              <Link
+                href="https://github.com/flyfish-sdk"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <Github className="mr-2 h-4 w-4" />
                 GitHub
               </Link>
@@ -111,5 +136,5 @@ export function Header() {
         </div>
       )}
     </header>
-  )
+  );
 }
