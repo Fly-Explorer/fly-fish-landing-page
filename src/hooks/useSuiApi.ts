@@ -1,10 +1,10 @@
 import useSWR from "swr";
 import useSWRMutation from "swr/mutation";
 import { suiOverflowService } from "@/services";
-import { ICommandResponse } from "@/types/api-responses";
+import { ICommandResponse, ICommandResult } from "@/types/api-responses";
 
 // Fetcher functions for SWR
-const fetchers = {
+export const fetchers = {
   // Commands
   getCommands: async (): Promise<ICommandResponse> => {
     return suiOverflowService.getCommands();
@@ -12,7 +12,43 @@ const fetchers = {
 
   // Balances
   getBalances: async ([, address]: string[]): Promise<ICommandResponse> => {
-    return suiOverflowService.getBalances(address);
+    // First get all token types for the address
+    const balancesList = await suiOverflowService.getBalances(address);
+    
+    // Extract tokens from the response
+    if (balancesList.data && Array.isArray(balancesList.data)) {
+      const tokenData = balancesList.data[0]?.data;
+      if (Array.isArray(tokenData)) {
+        // Create an array to hold all detailed token balances
+        const detailedBalances: ICommandResult[] = [];
+        
+        // For each token, fetch its detailed balance
+        for (const token of tokenData) {
+          if (token.path) {
+            const pathParts = token.path.split('/');
+            if (pathParts.length >= 4) {
+              const coinType = pathParts[3]; // Get coin type from path
+              const tokenBalance = await suiOverflowService.getTokenBalance(address, coinType);
+              if (tokenBalance.status && tokenBalance.data) {
+                detailedBalances.push({
+                  title: token.title,
+                  data: tokenBalance.data[0]?.data || []
+                });
+              }
+            }
+          }
+        }
+        
+        // Return the detailed balances in expected format
+        return {
+          code: 200,
+          status: true,
+          data: detailedBalances
+        };
+      }
+    }
+    
+    return balancesList; // Fallback to original response if cannot process
   },
 
   getTokenBalance: async ([
@@ -70,7 +106,7 @@ const fetchers = {
 
 // SWR Hook for commands
 export function useCommands() {
-  return useSWR<ICommandResponse>('commands', fetchers.getCommands);
+  return useSWR<ICommandResponse>("commands", fetchers.getCommands);
 }
 
 // SWR Hooks for balances

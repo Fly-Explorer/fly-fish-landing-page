@@ -1,6 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { Copy, ExternalLink, Wallet, Loader2, DollarSign, Coins } from 'lucide-react';
-import { useBalances } from '@/hooks/useSuiApi';
+import React, { useState, useEffect } from "react";
+import {
+  Copy,
+  ExternalLink,
+  Wallet,
+  Loader2,
+  DollarSign,
+  Coins,
+} from "lucide-react";
+import { useBalances } from "@/hooks/useSuiApi";
 
 interface CheckBalancesProps {
   query?: string;
@@ -14,23 +21,15 @@ interface TokenBalance {
   icon?: React.ReactNode;
 }
 
-interface TokenData {
-  symbol?: string;
-  name?: string;
-  balance?: string;
-  value?: string;
-  icon?: string;
-}
-
 const CheckBalances: React.FC<CheckBalancesProps> = ({ query }) => {
-  const [address, setAddress] = useState<string>(query || '');
-  const [searchAddress, setSearchAddress] = useState<string>('');
-  
+  const [address, setAddress] = useState<string>(query || "");
+  const [searchAddress, setSearchAddress] = useState<string>("");
+
   // Get real balance data using the hook
   const { data, error, isLoading: isLoadingData } = useBalances(searchAddress);
   const [hasSearched, setHasSearched] = useState<boolean>(false);
   const [tokenBalances, setTokenBalances] = useState<TokenBalance[]>([]);
-  const [totalValue, setTotalValue] = useState<string>('$0.00');
+  const [totalValue, setTotalValue] = useState<string>("$0.00");
 
   // Process the data when it arrives
   useEffect(() => {
@@ -39,47 +38,78 @@ const CheckBalances: React.FC<CheckBalancesProps> = ({ query }) => {
         // Parse the data and format it for display
         const tokens: TokenBalance[] = [];
         let total = 0;
-        
-        data.data.forEach(item => {
-          if (item.data && Array.isArray(item.data)) {
-            item.data.forEach(token => {
-              const tokenData = token.data as TokenData;
-              if (tokenData) {
-                const value = parseFloat(tokenData.value || '0');
-                total += value;
-                
-                tokens.push({
-                  symbol: tokenData.symbol || 'Unknown',
-                  name: tokenData.name || 'Unknown Token',
-                  balance: tokenData.balance || '0',
-                  value: `$${value.toFixed(2)}`,
-                  icon: tokenData.symbol === 'SUI' ? '🔷' : 
-                         tokenData.symbol === 'USDC' ? '💵' : '🪙'
-                });
+
+        data.data.forEach((item) => {
+          // Each item is a token with its balance details
+          if (item.data && typeof item.data === 'object') {
+            // The token symbol is in the title
+            const symbol = item.title;
+            
+            // Get balance data from the nested structure
+            const balanceData = Array.isArray(item.data) ? item.data[0]?.data : item.data;
+            
+            if (balanceData) {
+              // Safely extract the balance value with type checking
+              let balanceValue = 0;
+              if (typeof balanceData === 'object' && balanceData !== null && 'data' in balanceData) {
+                balanceValue = typeof balanceData.data === 'number' ? balanceData.data : 0;
               }
-            });
+              
+              // Assume $1 per token for demo - in a real app you'd use price data
+              const dollarValue = balanceValue;
+              total += dollarValue;
+              
+              tokens.push({
+                symbol: symbol,
+                name: getFullTokenName(symbol),
+                balance: balanceValue.toString(),
+                value: `$${dollarValue.toFixed(2)}`,
+                icon: getTokenIcon(symbol),
+              });
+            }
           }
         });
-        
+
         setTokenBalances(tokens);
         setTotalValue(`$${total.toFixed(2)}`);
       } catch (err) {
-        console.error('Error processing balance data:', err);
+        console.error("Error processing balance data:", err);
       }
     } else if (data && !isLoadingData) {
       // Fallback when no data or unexpected format
       setTokenBalances([
         {
-          symbol: 'SUI',
-          name: 'Sui',
-          balance: '0',
-          value: '$0.00',
-          icon: '🔷'
-        }
+          symbol: "SUI",
+          name: "Sui",
+          balance: "0",
+          value: "$0.00",
+          icon: "🔷",
+        },
       ]);
-      setTotalValue('$0.00');
+      setTotalValue("$0.00");
     }
   }, [data, isLoadingData]);
+
+  // Helper function to get full token name
+  const getFullTokenName = (symbol: string): string => {
+    const tokenNames: Record<string, string> = {
+      'SUI': 'Sui',
+      'USDC': 'USD Coin',
+      'USDT': 'Tether',
+      // Add more tokens as needed
+    };
+    return tokenNames[symbol] || 'Unknown Token';
+  };
+
+  // Helper function to get token icon
+  const getTokenIcon = (symbol: string): React.ReactNode => {
+    switch (symbol) {
+      case 'SUI': return "🔷";
+      case 'USDC': return "💵";
+      case 'USDT': return "💵";
+      default: return "🪙";
+    }
+  };
 
   const handleCheckBalance = () => {
     if (!address.trim()) return;
@@ -105,9 +135,9 @@ const CheckBalances: React.FC<CheckBalancesProps> = ({ query }) => {
           <span>Wallet Balances</span>
         </h3>
         {hasSearched && (
-          <a 
-            href={`https://explorer.sui.io/address/${searchAddress}`} 
-            target="_blank" 
+          <a
+            href={`https://explorer.sui.io/address/${searchAddress}`}
+            target="_blank"
             rel="noopener noreferrer"
             className="text-xs flex items-center gap-1 text-primary hover:underline"
           >
@@ -116,22 +146,22 @@ const CheckBalances: React.FC<CheckBalancesProps> = ({ query }) => {
           </a>
         )}
       </div>
-      
+
       <div className="rounded-lg border bg-card p-4 shadow-sm">
         <div className="flex gap-2">
-          <input 
-            type="text" 
+          <input
+            type="text"
             className="flex-1 p-2 border rounded-md focus:ring-2 focus:ring-primary focus:outline-none bg-background"
             value={address}
             onChange={(e) => setAddress(e.target.value)}
             placeholder="Enter Sui wallet address..."
-            onKeyDown={(e) => e.key === 'Enter' && handleCheckBalance()}
+            onKeyDown={(e) => e.key === "Enter" && handleCheckBalance()}
           />
-          <button 
+          <button
             className={`px-4 py-2 rounded-md font-medium text-sm transition-colors ${
-              isLoadingData 
-                ? 'bg-primary/70 text-black cursor-not-allowed' 
-                : 'bg-primary text-black hover:bg-primary/90'
+              isLoadingData
+                ? "bg-primary/70 text-black cursor-not-allowed"
+                : "bg-primary text-black hover:bg-primary/90"
             }`}
             onClick={handleCheckBalance}
             disabled={isLoadingData}
@@ -141,16 +171,18 @@ const CheckBalances: React.FC<CheckBalancesProps> = ({ query }) => {
                 <Loader2 className="h-4 w-4 animate-spin" />
                 Loading
               </span>
-            ) : 'Check Balance'}
+            ) : (
+              "Check Balance"
+            )}
           </button>
         </div>
-        
+
         {error && (
           <div className="mt-4 p-3 bg-red-50 border border-red-200 text-red-600 rounded-md text-sm">
             Error loading balance data. Please check the address and try again.
           </div>
         )}
-        
+
         {searchAddress && hasSearched && !error && (
           <div className="mt-4 animate-fadeIn">
             <div className="flex items-center gap-2 mb-4 bg-muted/40 p-2 rounded-md">
@@ -160,7 +192,7 @@ const CheckBalances: React.FC<CheckBalancesProps> = ({ query }) => {
               <div className="text-sm font-medium truncate flex-1">
                 {truncateAddress(searchAddress)}
               </div>
-              <button 
+              <button
                 onClick={() => copyToClipboard(searchAddress)}
                 className="text-foreground/60 hover:text-primary p-1 rounded-md hover:bg-muted transition-colors"
                 title="Copy address"
@@ -168,11 +200,13 @@ const CheckBalances: React.FC<CheckBalancesProps> = ({ query }) => {
                 <Copy className="h-4 w-4" />
               </button>
             </div>
-            
+
             {isLoadingData ? (
               <div className="py-12 flex flex-col justify-center items-center">
                 <Loader2 className="h-8 w-8 animate-spin text-primary mb-3" />
-                <p className="text-sm text-foreground/70">Loading balances...</p>
+                <p className="text-sm text-foreground/70">
+                  Loading balances...
+                </p>
               </div>
             ) : (
               <>
@@ -180,8 +214,8 @@ const CheckBalances: React.FC<CheckBalancesProps> = ({ query }) => {
                   <>
                     <div className="grid gap-3 mb-4">
                       {tokenBalances.map((token, index) => (
-                        <div 
-                          key={index} 
+                        <div
+                          key={index}
                           className="flex items-center justify-between p-3 rounded-md border border-border/50 hover:border-primary/30 transition-colors bg-background/50"
                         >
                           <div className="flex items-center gap-3">
@@ -189,18 +223,24 @@ const CheckBalances: React.FC<CheckBalancesProps> = ({ query }) => {
                               {token.icon}
                             </div>
                             <div>
-                              <div className="font-semibold">{token.symbol}</div>
-                              <div className="text-xs text-foreground/60">{token.name}</div>
+                              <div className="font-semibold">
+                                {token.symbol}
+                              </div>
+                              <div className="text-xs text-foreground/60">
+                                {token.name}
+                              </div>
                             </div>
                           </div>
                           <div className="text-right">
                             <div className="font-bold">{token.balance}</div>
-                            <div className="text-xs text-foreground/60">{token.value}</div>
+                            <div className="text-xs text-foreground/60">
+                              {token.value}
+                            </div>
                           </div>
                         </div>
                       ))}
                     </div>
-                    
+
                     <div className="mt-4 pt-4 border-t flex items-center justify-between bg-muted/20 p-3 rounded-md">
                       <div className="flex items-center gap-2">
                         <DollarSign className="h-5 w-5 text-primary" />
@@ -213,7 +253,9 @@ const CheckBalances: React.FC<CheckBalancesProps> = ({ query }) => {
                   <div className="py-8 text-center flex flex-col items-center text-foreground/60 bg-muted/20 rounded-lg">
                     <Coins className="h-10 w-10 mb-2 text-foreground/30" />
                     <p>No token balances found for this address</p>
-                    <p className="text-xs mt-1">This address may not have any tokens or may not exist</p>
+                    <p className="text-xs mt-1">
+                      This address may not have any tokens or may not exist
+                    </p>
                   </div>
                 )}
               </>
@@ -221,9 +263,12 @@ const CheckBalances: React.FC<CheckBalancesProps> = ({ query }) => {
           </div>
         )}
       </div>
-      
+
       <div className="text-xs text-muted-foreground bg-muted/30 p-3 rounded">
-        <p>This feature shows your SUI and other tokens on the Sui blockchain. Enter any wallet address to view its balances.</p>
+        <p>
+          This feature shows your SUI and other tokens on the Sui blockchain.
+          Enter any wallet address to view its balances.
+        </p>
       </div>
     </div>
   );

@@ -20,7 +20,7 @@ export interface IDataFormated {
 // Specific data types
 export interface BalanceData {
   title: string;
-  data: number;
+  path: string;
 }
 
 export interface NFTData {

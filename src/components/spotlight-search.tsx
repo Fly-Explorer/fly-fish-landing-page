@@ -17,6 +17,7 @@ export function SpotlightSearch() {
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [selectedFeature, setSelectedFeature] = useState<SelectedFeature | undefined>(undefined);
   const [contentType, setContentType] = useState<string>("commands");
+  const [isMac, setIsMac] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const spotlightRef = useRef<HTMLDivElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
@@ -30,6 +31,11 @@ export function SpotlightSearch() {
   const [processedResults, setProcessedResults] = useState<SpotlightResult[]>(
     []
   );
+
+  // Detect OS for keyboard shortcuts
+  useEffect(() => {
+    setIsMac(navigator.platform.toLowerCase().includes('mac'));
+  }, []);
 
   // Filter results based on search query
   const filteredResults = searchQuery
@@ -336,10 +342,11 @@ export function SpotlightSearch() {
               >
                 <div className="flex items-center">
                   <Command className="h-5 w-5 mr-2 text-primary" />
+                  {/* description keyboard shortcut */}
                   <span>
                     Press{" "}
                     <kbd className="px-2 py-1 bg-muted rounded mx-1 text-xs">
-                      Cmd
+                      {isMac ? 'Cmd' : 'Ctrl'}
                     </kbd>{" "}
                     +{" "}
                     <kbd className="px-2 py-1 bg-muted rounded mx-1 text-xs">
